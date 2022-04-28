@@ -129,7 +129,7 @@ if [[ ! -e /etc/openvpn/server/server.conf ]]; then
 		[[ -z "$ip_number" ]] && ip_number="1"
 		ip=$(ip -4 addr | grep inet | grep -vE '127(\.[0-9]{1,3}){3}' | cut -d '/' -f 1 | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}' | sed -n "$ip_number"p)
 	fi
-	# If $ip is a private IP address, the server must be behind NAT
+	# If $ip is a private IP address, the server must be behind NAT
 	if echo "$ip" | grep -qE '^(10\.|172\.1[6789]\.|172\.2[0-9]\.|172\.3[01]\.|192\.168)'; then
 		echo
 		echo "This server is behind NAT. What is the public IPv4 address or hostname?"
@@ -229,8 +229,11 @@ LimitNPROC=infinity" > /etc/systemd/system/openvpn-server@server.service.d/disab
 	if [[ "$os" = "debian" || "$os" = "ubuntu" ]]; then
 		apt-get update
 		apt-get install -y openvpn openssl ca-certificates $firewall
-	elif [[ "$os" = "centos" || "$os" = "al2" ]]; then
+	elif [[ "$os" = "centos" ]]; then
 		yum install -y epel-release
+		yum install -y openvpn openssl ca-certificates tar $firewall
+	elif [[ "$os" = "al2" ]]; then
+		amazon-linux-extras install -y epel
 		yum install -y openvpn openssl ca-certificates tar $firewall
 	else
 		# Else, OS must be Fedora
